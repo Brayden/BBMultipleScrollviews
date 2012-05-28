@@ -1,10 +1,11 @@
 //
-//  MultiScrollSection.h
-//  StyleMixer
-//
-//  Created by Brayden Wilmoth on 5/24/12.
-//  Copyright (c) 2012 Ball State University. All rights reserved.
-//
+// MultiScrollSection.h
+// -- Easily constructed multi-column scroll views
+// -- with customized images and parameter settings
+// 
+// Created by Brayden Wilmoth on 5/24/2012.
+// Copyright (c) 2012 Branding Brand.  All rights reserved.
+
 
 #import <UIKit/UIKit.h>
 
@@ -35,10 +36,7 @@ typedef enum {
 
 
 /** Single Scrolling View */
-@interface SingleScrollSection : UIScrollView <UIScrollViewDelegate> {
-    BOOL  scrollUp;
-    float scrollPos;
-}
+@interface SingleScrollSection : UIScrollView <UIScrollViewDelegate>
 
 - (id)initWithFrame:(CGRect)frame andArray:(NSArray *)array andInterval:(NSNumber *)interval allowOverflow:(BOOL)overflow;
 
