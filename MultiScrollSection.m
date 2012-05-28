@@ -134,7 +134,7 @@
     
     if(scrollOffset == 0)
         [self setContentOffset:CGPointMake((self.scrollDirection == kOrientationScrollHorizontal) ? self.frame.size.width * (self.contentArray.count) : 0, (self.scrollDirection == kOrientationScrollVertical) ? self.frame.size.height * (self.contentArray.count) : 0)];
-    else if(scrollOffset + scrollViewHeight > scrollContentSizeHeight - (self.frame.size.height))
+    else if((self.scrollDirection == kOrientationScrollHorizontal) ? scrollOffset + scrollViewHeight > scrollContentSizeHeight - (self.frame.size.width) : scrollOffset + scrollViewHeight > scrollContentSizeHeight - (self.frame.size.height))
         [self setContentOffset:CGPointMake((self.scrollDirection == kOrientationScrollHorizontal) ? self.frame.size.width : 0, (self.scrollDirection == kOrientationScrollVertical) ? self.frame.size.height : 0)];
 }
 
