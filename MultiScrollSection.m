@@ -37,7 +37,6 @@
 }
 
 -(void)drawRect:(CGRect)rect {
-    /** Calculate size and placement of sub-scroll views */
     int widthFill = 1;
     if(!self.doesFillPage)    widthFill = [self.pagingInterval intValue];
     
@@ -47,7 +46,6 @@
         float w = (self.orientation == kOrientationHorizontal) ? (rect.size.width / self.sectionsContent.count) - ((self.sectionsContent.count + 1) * [self.sectionPadding floatValue]) + ([self.sectionPadding floatValue] * (self.sectionsContent.count - 1)) : ((rect.size.width - ([self.sectionPadding floatValue] * 2)) / widthFill);
         float h = (self.orientation == kOrientationHorizontal) ? ((rect.size.height - ([self.sectionPadding floatValue] * 2)) / widthFill) : (rect.size.height / self.sectionsContent.count) - ((self.sectionsContent.count + 1) * [self.sectionPadding floatValue]) + ([self.sectionPadding floatValue] * (self.sectionsContent.count - 1));
         
-        //SingleScrollSection *scrollSection = [[SingleScrollSection alloc] initWithFrame:CGRectMake(x, y, w, h) andArray:[self.sectionsContent objectAtIndex:scrollViews] andInterval:self.pagingInterval allowOverflow:self.disableOverflow];
         SingleScrollSection *scrollSection = [[SingleScrollSection alloc] initWithFrame:(self.orientation == kOrientationVertical) ? CGRectMake((rect.size.width / 2) - (w / 2), y, w, h) : CGRectMake(x, (rect.size.height / 2) - (h / 2), w, h) andArray:[self.sectionsContent objectAtIndex:scrollViews] andInterval:self.pagingInterval allowOverflow:self.disableOverflow];
         scrollSection.contentSize = CGSizeMake((self.scrollDirection == kOrientationScrollHorizontal) ? (w * [[self.sectionsContent objectAtIndex:scrollViews] count]) : 0,
                                                (self.scrollDirection == kOrientationScrollHorizontal) ? 0 : (h * [[self.sectionsContent objectAtIndex:scrollViews] count]));
@@ -81,8 +79,8 @@
         self.contentArray = array;                          // Input array immutable copy
         self.pagingInterval = interval;                     // Number of pages loaded in each direction
         self.clipsToBounds = overflow;                      // Flag enable/disable overflow content
-        self.showsVerticalScrollIndicator = FALSE;
-        self.showsHorizontalScrollIndicator = FALSE;
+        self.showsVerticalScrollIndicator = FALSE;          // Do not show scrolling indicator
+        self.showsHorizontalScrollIndicator = FALSE;        // Do not show scrolling indicator
     }
     
     return self;
@@ -94,9 +92,9 @@
     for(int pages = 0; pages < self.contentArray.count; pages++) {
         UIImageView *image = [[UIImageView alloc] initWithImage:[UIImage imageNamed:[NSString stringWithFormat:@"%@", [self.contentArray objectAtIndex:pages]]]];
         image.frame = CGRectMake( (self.scrollDirection == kOrientationScrollHorizontal) ? rect.size.width * pages : 0, 
-                                  (self.scrollDirection == kOrientationScrollHorizontal) ? 0 : rect.size.height * pages, 
-                                  rect.size.width, 
-                                  rect.size.height);
+                                 (self.scrollDirection == kOrientationScrollHorizontal) ? 0 : rect.size.height * pages, 
+                                 rect.size.width, 
+                                 rect.size.height);
         [self addSubview:image];
     }
     
@@ -124,21 +122,20 @@
         [self addSubview:image];
     }
     
-    [self setContentSize:CGSizeMake(rect.size.width, rect.size.height * (self.contentArray.count + [self.pagingInterval intValue]))];
+    [self setContentSize:CGSizeMake((self.scrollDirection == kOrientationScrollHorizontal) ? rect.size.width * (self.contentArray.count + [self.pagingInterval intValue]) : rect.size.width, (self.scrollDirection == kOrientationScrollVertical) ? rect.size.height * (self.contentArray.count + [self.pagingInterval intValue]) : 0)];
     [self setContentOffset:(self.scrollDirection == kOrientationScrollHorizontal) ? CGPointMake(self.frame.size.width, 0) : CGPointMake(0, self.frame.size.height) animated:NO];
-
+    
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
-    float scrollViewHeight = scrollView.frame.size.height;
-    float scrollContentSizeHeight = scrollView.contentSize.height;
-    float scrollOffset = scrollView.contentOffset.y;
+    float scrollViewHeight = (self.scrollDirection == kOrientationScrollVertical) ? scrollView.frame.size.height : scrollView.frame.size.width;
+    float scrollContentSizeHeight = (self.scrollDirection == kOrientationScrollVertical) ? scrollView.contentSize.height : scrollView.contentSize.width;
+    float scrollOffset = (self.scrollDirection == kOrientationScrollVertical) ? scrollView.contentOffset.y : scrollView.contentOffset.x;
     
-    if(scrollOffset == 0) {
-        [self setContentOffset:CGPointMake(0, self.frame.size.height * (self.contentArray.count))];
-    } else if(scrollOffset + scrollViewHeight > scrollContentSizeHeight - (self.frame.size.height * 2)) {
-        [self setContentOffset:CGPointMake(0, self.frame.size.height)];
-    }
+    if(scrollOffset == 0)
+        [self setContentOffset:CGPointMake((self.scrollDirection == kOrientationScrollHorizontal) ? self.frame.size.width * (self.contentArray.count) : 0, (self.scrollDirection == kOrientationScrollVertical) ? self.frame.size.height * (self.contentArray.count) : 0)];
+    else if(scrollOffset + scrollViewHeight > scrollContentSizeHeight - (self.frame.size.height * 2))
+        [self setContentOffset:CGPointMake((self.scrollDirection == kOrientationScrollHorizontal) ? self.frame.size.width : 0, (self.scrollDirection == kOrientationScrollVertical) ? self.frame.size.height : 0)];
 }
 
 
