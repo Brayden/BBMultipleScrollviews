@@ -55,6 +55,21 @@
     }
 }
 
+/** Custom Feature for AE */
+-(void)mixIt:(int)limit {
+    for(UIView *subview in self.subviews) {
+        if ([subview isKindOfClass:[SingleScrollSection class]]) {
+            [self spinScroller:(SingleScrollSection *)subview upperLimit:limit];
+        }
+    }
+}
+
+-(void)spinScroller:(SingleScrollSection *)scrollView upperLimit:(int)limit {
+    [UIView animateWithDuration:(arc4random() % limit) animations:^(void) {
+        [scrollView scrollRectToVisible:CGRectMake(0, 400, scrollView.contentSize.width, scrollView.contentSize.height) animated:NO];
+    }];
+}
+
 @end
 
 
@@ -137,24 +152,5 @@
     else if((self.scrollDirection == kOrientationScrollHorizontal) ? scrollOffset + scrollViewHeight > scrollContentSizeHeight - (self.frame.size.width) : scrollOffset + scrollViewHeight > scrollContentSizeHeight - (self.frame.size.height))
         [self setContentOffset:CGPointMake((self.scrollDirection == kOrientationScrollHorizontal) ? self.frame.size.width : 0, (self.scrollDirection == kOrientationScrollVertical) ? self.frame.size.height : 0)];
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 @end
